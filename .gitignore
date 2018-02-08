@@ -22,6 +22,3 @@ project/plugins/project/
 .worksheet
 .idea/workspace.xml
 .idea/.name
-
-# Hive
-metastore_db/*

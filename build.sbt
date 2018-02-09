@@ -15,6 +15,8 @@ libraryDependencies += "org.apache.spark" %% "spark-core" % "2.2.0"
 
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.2.0"
 
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.0-SNAP10" % Test
+
 scalacOptions += "-target:jvm-1.8"
 
 // note: tested directly using sbt with -java-home pointing to a JDK 1.8

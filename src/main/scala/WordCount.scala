@@ -22,13 +22,13 @@ object WordCount {
 
   }
 
-  /** Creates a dataset with a given filename
+  /** Creates a dataset with a given filename, SparkSession and datasetName
     *
     *  @param sparkSession
     *  @param fileName
     *  @param datasetName
     */
-  private def createDataSet(sparkSession: SparkSession, fileName: String, datasetName: String) = {
+  protected def createDataSet(sparkSession: SparkSession, fileName: String, datasetName: String) = {
     import sparkSession.implicits._
     val ds = sparkSession.read.text("./src/main/resources/data/" + fileName).as[String]
     val result = ds
@@ -50,7 +50,7 @@ object WordCount {
   private def setUp = {
     val sparkSession = SparkSession.builder.
       master("local")
-      .appName("example")
+      .appName("WordCount")
       .getOrCreate()
 
     sparkSession.conf.set("spark.sql.shuffle.partitions", 2)

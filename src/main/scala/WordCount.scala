@@ -1,4 +1,4 @@
-import org.apache.spark.sql.{Dataset, Row, SparkSession}
+import org.apache.spark.sql.{SparkSession}
 import org.apache.spark.sql.functions.{count, desc}
 
 object WordCount {
@@ -8,29 +8,38 @@ object WordCount {
     val sparkSession: SparkSession = setUp
 
     val files = "t1.txt" :: "t2.txt" :: Nil
-    for( i <- 0 to files.length-1){
-      createDataSet(sparkSession, files(i), "resultSet".concat(i.toString))
+    val filePath = "./src/main/resources/data/"
+    for (i <- 0 to files.length - 1) {
+      createDataSet(sparkSession, filePath, files(i), "resultSet".concat(i.toString))
     }
+    createFinalResultSet(sparkSession)
+  }
 
-    sparkSession.sql("SELECT NVL(a.value, b.value) as word, (NVL(a.count,0) + NVL(b.count,0)) as total_occurrences, " +
-                    "NVL(a.count,0) as occurrences_file1, NVL(b.count,0) as occurrences_file2 " +
-                    "FROM resultSet0 a " +
-                    "FULL OUTER JOIN resultSet1 b " +
-                    "ON a.value = b.value " +
-                    "ORDER BY 2 DESC")
-                .show()
-
+  /** Creates a final dataset with resultSet0 and resultSet1
+    *
+    * @param sparkSession
+    */
+  def createFinalResultSet(sparkSession: SparkSession) = {
+    val sqlDf = sparkSession.sql("SELECT NVL(a.value, b.value) as word, (NVL(a.count,0) + NVL(b.count,0)) as total_occurrences, " +
+      "NVL(a.count,0) as occurrences_file1, NVL(b.count,0) as occurrences_file2 " +
+      "FROM resultSet0 a " +
+      "FULL OUTER JOIN resultSet1 b " +
+      "ON a.value = b.value " +
+      "ORDER BY 2 DESC")
+    sqlDf.createOrReplaceTempView("finalResultSet")
+    sqlDf.show()
   }
 
   /** Creates a dataset with a given filename, SparkSession and datasetName
     *
-    *  @param sparkSession
-    *  @param fileName
-    *  @param datasetName
+    * @param sparkSession
+    * @param filePath
+    * @param fileName
+    * @param datasetName
     */
-  protected def createDataSet(sparkSession: SparkSession, fileName: String, datasetName: String) = {
+  def createDataSet(sparkSession: SparkSession, filePath: String, fileName: String, datasetName: String) = {
     import sparkSession.implicits._
-    val ds = sparkSession.read.text("./src/main/resources/data/" + fileName).as[String]
+    val ds = sparkSession.read.text(filePath + fileName).as[String]
     val result = ds
       .flatMap(_.trim.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+")) // Split on whitespace
       .filter(_ != "") // Filter empty words

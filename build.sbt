@@ -14,6 +14,5 @@ libraryDependencies += "org.apache.spark" %% "spark-core" % "2.2.0"
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.2.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.0-SNAP10" % Test
 libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.5" % Test
-//libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 
 scalacOptions += "-target:jvm-1.8"

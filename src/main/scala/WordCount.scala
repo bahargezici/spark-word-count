@@ -1,10 +1,9 @@
-import org.apache.spark.sql.{SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{count, desc}
 
-object WordCount {
+object WordCount{
 
   def main(args: Array[String]): Unit = {
-
     val sparkSession: SparkSession = setUp
 
     val files = "t1.txt" :: "t2.txt" :: Nil
@@ -25,7 +24,7 @@ object WordCount {
       "FROM resultSet0 a " +
       "FULL OUTER JOIN resultSet1 b " +
       "ON a.value = b.value " +
-      "ORDER BY 2 DESC")
+      "ORDER BY 2 DESC").repartition(2)
     sqlDf.createOrReplaceTempView("finalResultSet")
     sqlDf.show()
   }
@@ -57,8 +56,10 @@ object WordCount {
     *
     */
   private def setUp = {
-    val sparkSession = SparkSession.builder.
-      master("local")
+    val sparkSession = SparkSession
+      .builder
+      .master("local[*]")
+      .config("spark.default.parallelism", 12)
       .appName("WordCount")
       .getOrCreate()
 
